@@ -69,10 +69,22 @@
     (write (name x))
 
     (map? x)
-    (str "d" (reduce-kv (fn [s k v] (str s (write k) (write v))) "" x) "e")
+    (str "d" 
+         (reduce (fn [s [k v]] (str s (write k) (write v)))
+                 ""
+                 (sort-by #(-> % first name)
+                          x))
+         "e")
 
-    (coll? x)
-    (str "l" (apply str (map write x)) "e")
+
 
     (nil? x)
-    (throw (ex-info "cannot write nil as bencode" {}))))
+    (throw (ex-info "cannot write nil as bencode" {}))
+    
+    (or (coll? x)
+        (seq? x))
+    (str "l" (apply str (map write x)) "e")
+    
+    :else (throw (ex-info "Unexpected data type for bencode" {:x x}))
+    ))
+
