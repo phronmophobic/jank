@@ -65,7 +65,9 @@
     (string? x)
     (str (count x) ":" x)
 
-    (keyword? x)
+    ;; namespace keywords/symbols ignored??   
+    (or (symbol? x)
+        (keyword? x))
     (write (name x))
 
     (map? x)
