@@ -51,11 +51,12 @@
   [^(:* jank.nrepl.server.native_client) client buffer]
   (if-let [result (bencode/parse buffer)]
     result
-    (let [chunk (.read_some client)
-          input (str buffer chunk)]
-      (if-let [result (bencode/parse input)]
-        result
-        [nil input]))))
+    (let [chunk (.read_some client)]
+      (when (.is_connected client)
+        (let [input (str buffer chunk)]
+          (if-let [result (bencode/parse input)]
+            result
+            [nil input]))))))
 
 (defn write-message
   "Encode the given message and write it to the client socket."
